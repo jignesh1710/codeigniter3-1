@@ -24,7 +24,7 @@ class Hello extends CI_Controller {
 	//  }
 	public function index()
 	{
-		$this->load->view('hello');
+		$this->load->view('apiimage');
 	}
     public function fetch()
 	{
@@ -257,5 +257,160 @@ class Hello extends CI_Controller {
 		$this->email->subject("jignesh");
 		$this->email->message("Hello I Am jignesh");
 		$this->email->send();
+	}
+	public function insert21view()
+	{
+		$this->load->view("insert21");
+	}
+	public function insert21viewadd()
+	{
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules("fname","fname","required|alpha");
+		$this->form_validation->set_rules("lname","lname","required");
+		$this->form_validation->set_rules("email","email","required|valid_email");
+		$this->form_validation->set_rules("pno","pno","required|max_length[10]|min_length[10]|numeric");
+		if($this->form_validation->run() == false)
+		{
+			$this->load->view("insert21");
+		}
+		else{
+
+		
+		$config['upload_path']='images';
+		$config['allowed_types']='jpg|png|gif';
+		$config['max_size']=7000;
+		$config['max_width']=7000;
+		$config['max_height']=7000;
+		$this->load->library("upload",$config);
+		if(!$this->upload->do_upload("filename"))
+		{
+
+		}
+		else{
+			$images=$this->upload->data();
+			$data=array(
+				'fname'=>$this->input->post("fname"),
+				'lname'=>$this->input->post("lname"),
+				'email'=>$this->input->post("email"),
+				'pno'=>$this->input->post("pno"),
+				'image'=>$images['file_name'],
+			);
+			$this->db->insert("tbl_insert",$data);
+		}
+	}
+	}
+	public function fetch21()
+	{
+		$data['fetch']=$this->db->get("tbl_insert");
+		$data['ftc']=$data['fetch']->result_array();
+		$this->load->view("fetch21",$data);
+	}
+	public function edit21($id=null)
+	{
+		$this->db->where('id',$id);
+		$data['edit']=$this->db->get("tbl_insert")->row();
+		$this->load->view("edit21",$data);
+		 
+	}
+	public function edit21add($id=null)
+	{
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules("fname","fname","required|alpha");
+		$this->form_validation->set_rules("lname","lname","required");
+		$this->form_validation->set_rules("email","email","required|valid_email");
+		$this->form_validation->set_rules("pno","pno","required|max_length[10]|min_length[10]|numeric");
+		if($this->form_validation->run() == false)
+		{
+			$this->db->where('id',$id);
+		$data['edit']=$this->db->get("tbl_insert")->row();
+				$this->load->view('edit21',$data);
+		}
+		else{
+
+		$config['upload_path']="images";
+		$config['allowed_types']="jpg|png|gif";
+		$config['max_size']=7000;
+		$config['max_width']=7000;
+		$config['max_height']=7000;
+		$this->load->library("upload",$config);
+		if(!$this->upload->do_upload("filename"))
+		{
+			$data=array(
+				'fname'=>$this->input->post('fname'),
+				'lname'=>$this->input->post('lname'),
+				'email'=>$this->input->post('email'),
+				'pno'=>$this->input->post('pno'),
+				
+			);
+			$this->db->where('id',$_POST['id']);
+			$this->db->update("tbl_insert",$data);
+			redirect(base_url('hello/fetch21'));
+		}
+		else{
+
+			
+		$data=array(
+			'fname'=>$this->input->post("fname"),
+			'lname'=>$this->input->post("lname"),
+			'email'=>$this->input->post("email"),
+			'pno'=>$this->input->post("pno"),
+		);
+		$data1=array('filename'=>$this->upload->data());
+		$img=$data1['filename']['file_name'];
+		
+		$this->db->where('id',$_POST['id']);
+		$this->db->set('image',$img);
+		$this->db->update("tbl_insert",$data);
+		redirect(base_url('hello/fetch21'));
+	}
+}
+	}
+	public function ajaxinsertview()
+	{
+		$this->load->view("ajaxinsert");
+	}
+	public function ajaxinsertviewadd()
+	{
+		$config['upload_path']='images';
+		$config['allowed_types']='jpg|png|gif';
+		$config['max_size']=7000;
+		$config['max_width']=7000;
+		$config['max_height']=7000;
+		$this->load->library("upload",$config);
+		if(!$this->upload->do_upload("filename"))
+		{
+
+		}
+		else{
+			$images=$this->upload->data();
+			$data=array(
+				'fname'=>$this->input->post("fname"),
+				'lname'=>$this->input->post("lname"),
+				'email'=>$this->input->post("email"),
+				'pno'=>$this->input->post("pno"),
+				'image'=>$images['file_name'],
+			);
+			$this->db->insert("tbl_insert",$data);
+		}
+	}
+	public function ajaxfetchdata()
+	{
+		$select=$this->db->get('tbl_insert');
+		foreach($select->result_array() as $row)
+		{
+			echo "<tr>";
+			echo "<td>".$row['fname']."</td>";
+			echo "<td>".$row['lname']."</td>";
+			echo "<td>".$row['email']."</td>";
+			echo "<td>".$row['pno']."</td>";
+			// echo "<td>".$row['image']."</td>";
+			echo "<td><img src='http://localhost:8080/coder/images/".$row['image']."' style='width:100px;height:100px;'></td>";
+			echo "<td><button type='button' class='btn btn-success btn-sm edit' data-toggle='modal' data-target='#myModal' data-id='".$row['id']."'>Edit</button></td>";
+			echo "<td><button type='button' class='btn btn-danger btn-sm delete' data-id='".$row['id']."'>Delete</button></td>";
+			
+			echo "<tr>";
+		}
+		// print_r($select);
+		// exit();
 	}
 }

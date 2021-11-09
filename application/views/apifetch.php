@@ -18,7 +18,7 @@
   <tbody>
   <?php foreach($ftc as $row){?>
     <tr>
-      <th scope="row">1</th>
+    <th scope="row"><input type="checkbox" value="<?php echo $row['id'];?>"></th>
       <td><?php echo $row['fname'];?></td>
       <td><?php echo $row['lname'];?></td>
       <td><?php echo $row['email'];?></td>

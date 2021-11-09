@@ -18,7 +18,7 @@
   <tbody>
   <?php foreach($ftc as $row){?>
     <tr>
-      <th scope="row">1</th>
+      <th scope="row"><input type="checkbox" name="deleteid" class="deleteid" value="<?php echo $row['id'];?>"></th>
       <td><?php echo $row['fname'];?></td>
       <td><?php echo $row['lname'];?></td>
       <td><?php echo $row['email'];?></td>
@@ -29,9 +29,7 @@
    <?php } ?> 
   </tbody>
 </table>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <?php if($this->session->flashdata('msg')){?>
 <script>
 
@@ -42,3 +40,34 @@ swal({
 });
 </script>
 <?php } ?>
+<script>
+$(document).ready(function(){
+$('.deleteid').click(function(e){
+ e.preventDefault();
+ var deleteid = [];
+ $(":checkbox:checked").each(function(key){
+ deleteid[key]=$(this).val();
+ 
+ });
+
+ if(deleteid.length === 0)
+ {
+
+ }
+ else{
+
+  $.ajax(
+    {
+     url:'<?php echo base_url();?>hello/delete',
+     type:'post',
+     data:{deleteid:deleteid},
+     success:function(data){
+        console.log(data);
+     }
+    });
+ }
+
+});
+});
+
+</script>

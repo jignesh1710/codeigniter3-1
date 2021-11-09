@@ -20,7 +20,51 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('hello');
+		$this->load->view('append');
+	}
+	public function appendcode()
+	{
+		$name=$this->input->post('name');
+		$lname=$this->input->post('lname');
+		$name1 = serialize($name);
+		$lname1 = serialize($lname);
+		$newvar = unserialize($name1); 
+		$newvar1 = unserialize($lname1); 
+		$data=array(
+			'name'=>$name1,
+			'lname'=>$lname1,
+		);
+		$this->db->insert("append",$data);
+	}
+	public function appendedit($id)
+	{
+		$data['edit']=$this->db->query("select * from append where id='$id'")->row();
+		$this->load->view('appendedit',$data);
+	}
+	public function appendeditcode()
+	{
+		// print_r($id);
+		// exit();
+		$id=$this->input->post('id');
+		$name=$this->input->post('name');
+		$lname=$this->input->post('lname');
+		$name1 = serialize($name);
+		$lname1 = serialize($lname);
+		$newvar = unserialize($name1); 
+		$newvar1 = unserialize($lname1); 
+		$data=array(
+			'name'=>$name1,
+			'lname'=>$lname1,
+		);
+		$this->db->where('id',$id);
+		$this->db->update("append",$data);
+		redirect('welcome');
+	}
+	public function delete($id)
+	{
+		$this->db->where('id',$id);
+		$this->db->delete("append");
+		redirect('welcome');
 	}
 	
 }

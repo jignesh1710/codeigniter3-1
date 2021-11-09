@@ -26,6 +26,24 @@ class Hello extends CI_Controller {
 	{
 		$this->load->view('apiimage');
 	}
+	public function insertvalidation()
+	{
+		$this->load->view('insertvalidation');
+	}
+	public function insertvalidationcode()
+	{
+		$this->load->library("form_validation");
+		$this->form_validation->set_rules("fname","fname","required");
+		$this->form_validation->set_rules("email","email","required|is_unique[tbl_insert.email]");
+		if($this->form_validation->run()==false)
+		{
+			$this->load->view("insertvalidation");
+		}
+		else
+		{
+			
+		}
+	}
     public function fetch()
 	{
 		$this->load->database();
@@ -87,10 +105,13 @@ class Hello extends CI_Controller {
 	{
 		$this->load->view("insert");
 	}
-	public function delete($id=null)
+	public function delete()
 	{
 		//  $this->load->database();
-		$this->db->where('id',$id);
+		$id1=$this->input->post("deleteid");
+		$str=implode($id1,",");
+	
+		$this->db->where('id',$str);
 		$this->db->delete("tbl_insert");
 		redirect("hello/fetch");
 	}
@@ -412,5 +433,46 @@ class Hello extends CI_Controller {
 		}
 		// print_r($select);
 		// exit();
+	}
+	public function mpdf1()
+	{
+		$mpdf = new \Mpdf\Mpdf();
+        $html = $this->load->view('mpdf',[],true);
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
+	}
+	public function ajax()
+	{
+		$this->load->view("ajaximage");
+	}
+	public function ajaxcode()
+	{
+		$config["upload_path"]="images/";
+		$config["allowed_types"]="jpg|png|gif";
+		$config["max_size"]=7000;
+		$config["max_width"]=7000;
+		$config["max_height"]=7000;
+		$this->load->library("upload",$config);
+		if(!$this->upload->do_upload("file"))
+		{
+
+		}
+		else{
+		$fullname=$this->input->post("fullname");
+		$email=$this->input->post("email");
+		$password=$this->input->post("password");
+		$image=$this->upload->data();
+		$data=array(
+			'fullname'=>$fullname,
+			'email'=>$email,
+			'password'=>$password,
+			'fullname'=>$fullname,
+			"image"=>$image['file_name']
+		);
+		print_r($data);
+		$this->db->insert("ajax",$data);
+
+		}
+		
 	}
 }
